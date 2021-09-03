@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1076639262326",
+    "project_id": "play-apps-studios6",
+    "storage_bucket": "play-apps-studios6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076639262326:android:7d411703b846c2a64e2157",
+        "android_client_info": {
+          "package_name": "com.studio6.instagram.media.post.reel.igtv.story.downloader"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1076639262326-vv6h3qp4qj2f93448fokjf48p9culcbq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDqJdDY2WhmllDNmgmApC-dZ9nJ5e-WiVE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1076639262326-vv6h3qp4qj2f93448fokjf48p9culcbq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
