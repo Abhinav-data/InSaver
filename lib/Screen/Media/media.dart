@@ -41,10 +41,9 @@ class _MediaState extends State<Media> {
   Map<String, String> data = {};
   Widget ad = Container();
   Random random = new Random();
-  int rnd = 2;
+  int pos = 2;
 
   ReceivePort _port = ReceivePort();
-
   @override
   void initState() {
     _bindBackgroundIsolate();
@@ -54,7 +53,6 @@ class _MediaState extends State<Media> {
       ..onDataReceived = _handleSharedData
       ..getSharedData().then(_handleSharedData);
     initializeBanner();
-    rnd = random.nextInt(5) + 2;
     super.initState();
   }
 
@@ -73,8 +71,6 @@ class _MediaState extends State<Media> {
       }
     }
   }
-
-  void _checkCopiedLink() async {}
 
   @override
   void dispose() {
@@ -195,6 +191,7 @@ class _MediaState extends State<Media> {
                     ),
                     fetchLoading(_isFetching, context),
                     fetchProgress(_showProgress, context),
+                    showQuerka(),
                   ],
                 ),
               ),
@@ -225,6 +222,47 @@ class _MediaState extends State<Media> {
               },
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void launchURL() async {
+    try {
+      await launch(
+        'https://1446.win.qureka.com',
+        customTabsOption: CustomTabsOption(
+          toolbarColor: Colors.black,
+          enableDefaultShare: true,
+          enableUrlBarHiding: true,
+          showPageTitle: true,
+        ),
+        safariVCOption: SafariViewControllerOption(
+          preferredBarTintColor: Colors.black,
+          preferredControlTintColor: Colors.white,
+          barCollapsingEnabled: true,
+          entersReaderIfAvailable: false,
+          dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+        ),
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+  }
+
+  showQuerka() {
+    return GestureDetector(
+      onTap: () {
+        launchURL();
+      },
+      child: Padding(
+        padding: EdgeInsets.only(
+            left: 8.0, right: 8, top: (_showProgress) ? 0 : 8),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(5),
+          child: Container(
+            child: Image.asset('assets/images/2.gif'),
+          ),
         ),
       ),
     );

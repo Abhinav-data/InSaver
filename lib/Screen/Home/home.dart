@@ -1,14 +1,17 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_custom_tabs/flutter_custom_tabs.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:device_apps/device_apps.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:insaver/Screen/Download/download.dart';
 import 'package:insaver/Screen/Media/media.dart';
 import 'package:insaver/Screen/Whatsapp/whatsapp.dart';
 import 'package:insaver/Utils/constants.dart';
 import 'package:share/share.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -18,12 +21,93 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   int currentIndex = 0;
+  late FirebaseMessaging messaging;
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   @override
   void initState() {
     super.initState();
+
     initializeAppodeal();
+    initializeNotification();
   }
+
+  initializeNotification() async {
+    // messaging = FirebaseMessaging.instance;
+    // messaging.getToken().then((value) {
+    //   print(value);
+    // });
+
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        RemoteNotification? notification = message.notification;
+        AndroidNotification? android = message.notification!.android;
+        if (notification != null && android != null) {
+          flutterLocalNotificationsPlugin.show(
+            notification.hashCode,
+            notification.title,
+            notification.body,
+            NotificationDetails(
+              android: AndroidNotificationDetails(
+                channel.id,
+                channel.name,
+                channel.description,
+                playSound: true,
+                icon: '@mipmap/ic_launcher',
+              ),
+            ),
+          );
+        }
+      },
+    );
+    FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) async {
+      print('A new onMessageOpenedApp event was published!');
+      RemoteNotification? notification = message.notification;
+      AndroidNotification? android = message.notification?.android;
+      if (notification != null && android != null) {
+        try {
+          await launch(
+            'https://1446.win.qureka.com',
+            customTabsOption: CustomTabsOption(
+              toolbarColor: Colors.black,
+              enableDefaultShare: true,
+              enableUrlBarHiding: true,
+              showPageTitle: true,
+            ),
+            safariVCOption: SafariViewControllerOption(
+              preferredBarTintColor: Colors.black,
+              preferredControlTintColor: Colors.white,
+              barCollapsingEnabled: true,
+              entersReaderIfAvailable: false,
+              dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+            ),
+          );
+        } catch (e) {
+          debugPrint(e.toString());
+        }
+      }
+    });
+  }
+
+  AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel', // id
+    'High Importance Notifications', // title
+    'This channel is used for important notifications.', // description
+    importance: Importance.high,
+    playSound: true,
+  );
 
   @override
   void dispose() {
@@ -101,6 +185,11 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             splashColor: Colors.transparent,
+            onPressed: launchURL,
+            icon: Image.asset('assets/images/1.gif'),
+          ),
+          IconButton(
+            splashColor: Colors.transparent,
             onPressed: () async {
               if (currentIndex == 0 || currentIndex == 2) {
                 bool isInstalled =
@@ -143,6 +232,29 @@ class _HomeState extends State<Home> {
         currentIndex = i;
       });
     }
+  }
+}
+
+void launchURL() async {
+  try {
+    await launch(
+      'https://1446.win.qureka.com',
+      customTabsOption: CustomTabsOption(
+        toolbarColor: Colors.black,
+        enableDefaultShare: true,
+        enableUrlBarHiding: true,
+        showPageTitle: true,
+      ),
+      safariVCOption: SafariViewControllerOption(
+        preferredBarTintColor: Colors.black,
+        preferredControlTintColor: Colors.white,
+        barCollapsingEnabled: true,
+        entersReaderIfAvailable: false,
+        dismissButtonStyle: SafariViewControllerDismissButtonStyle.close,
+      ),
+    );
+  } catch (e) {
+    debugPrint(e.toString());
   }
 }
 
